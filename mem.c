@@ -1,4 +1,7 @@
 #include "mem.h"
+#ifndef EMBEDDED
+	#include <stdlib.h>
+#endif
 
 
 
@@ -88,7 +91,11 @@ Boolean memAccess(ArmMem* mem, UInt32 addr, UInt8 size, Boolean write, void* buf
 		err_str(" bytes at physical addr 0x");
 		err_hex(addr);
 		err_str(" fails, halting\r\n");
-		while(1);
+		#ifndef EMBEDDED
+			exit(-1);
+		#else
+			while(1);
+		#endif
 	}
 	
 	return false;

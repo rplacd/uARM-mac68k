@@ -19,8 +19,12 @@
 	#include <avr/io.h>
 #endif
 
-
-#define ERR(s)	do{err_str(s " Halting\r\n"); while(1); }while(0)
+#ifdef EMBEDDED
+	#define ERR(s)	do{err_str(s " Halting\r\n"); while(1); }while(0)
+#else
+	#include <stdlib.h>
+	#define ERR(s)	{err_str(s " Halting\r\n"); exit(-1);}
+#endif
 
 static const UInt8 embedded_boot[] =	{
 						0x01, 0x00, 0x8F, 0xE2, 0x10, 0xFF, 0x2F, 0xE1, 0x04, 0x27, 0x01, 0x20, 0x00, 0x21, 0x00, 0xF0,
@@ -28,12 +32,6 @@ static const UInt8 embedded_boot[] =	{
 						0x20, 0x60, 0x24, 0x1D, 0x49, 0x1C, 0x80, 0x29, 0xF8, 0xD1, 0x28, 0x47, 0xBC, 0x46, 0xBB, 0xBB,
 						0x70, 0x47
 					};
-
-#define ROM_BASE	0x00000000UL
-#define ROM_SIZE	sizeof(embedded_boot)
-
-#define RAM_BASE	0xA0000000UL
-#define RAM_SIZE	0x01000000UL	//16M @ 0xA0000000
 
 
 static Boolean vMemF(ArmCpu* cpu, void* buf, UInt32 vaddr, UInt8 size, Boolean write, Boolean priviledged, UInt8* fsrP){
