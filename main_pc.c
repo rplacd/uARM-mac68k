@@ -155,6 +155,53 @@ int rootOps(void* userData, UInt32 sector, void* buf, UInt8 op){
 }
 
 SoC soc;
+const char* ramFilePath = "RAM_16MB.bin";
+FILE *ramFile; // 16MB, per RAM_SIZE in SoC.c
+
+
+Boolean coRamAccess(_UNUSED_ CalloutRam* ram, UInt32 addr, UInt8 size, Boolean write, void* bufP) {
+// Below, we ran socInit(&soc, socRamModeCallout, coRamAccess, ...
+// As a result, this fucntion (coRamAccess) is a callback that handles memory operations.
+
+	UInt8* b = bufP;
+	
+	if(fseek(ramFile, addr, SEEK_SET) != 0) {
+		perror("Error accessing location in ramfile");
+		exit(-1);
+	}
+
+	if(write) {
+		// pseudocode: ramWrite(addr, b, size);
+		fwrite(b, 1, size, ramFile);
+		
+		// the C standard doesn't specify how 'fwrite' will
+		// signal an error condition with its return value,
+		// so we manually check for error conditions:
+		if (feof(ramFile)) {
+			printf("Error wrtiing to ramfile: end of file");
+			exit(-1);
+		} else if (ferror(ramFile)) {
+			perror("Error writing to ramfile");
+			exit(-1);
+		}
+	} else {
+		// pseudocode: ramRead(addr, b, size);
+		if(fread(b, 1, size, ramFile) != size) {
+			if (feof(ramFile)) {
+				printf("Error writing to ramfile: end of file");
+				exit(-1);
+			} else if (ferror(ramFile)) {
+				perror("Error writing to ramfile");
+				exit(-1);
+			} else {
+				printf("Error writing to ramfile: some other error\n");
+				exit(-1);
+			}
+		}
+	}
+
+	return true;
+}
 
 int main(int argc, char** argv){
 	
@@ -166,6 +213,7 @@ int main(int argc, char** argv){
 		fprintf(stderr,"usage: %s path_to_disk [gdbPort]\n", argv[0]);
 		return -1;	
 	}
+	
 	
 	//setup the terminal
 	{
@@ -196,9 +244,29 @@ int main(int argc, char** argv){
 	
 	if(argc >= 3) gdbPort = atoi(argv[2]);
 	
-	socInit(&soc, socRamModeAlloc, NULL, readchar, writechar, rootOps, root);
+	
+	//setup the RAM disk
+	{
+		ramFile = fopen(ramFilePath, "w+b");
+		if (ramFile == NULL) {
+			perror("Creating/opening ramfile failed");
+			exit(-1);
+		}
+		if(ftruncate(fileno(ramFile), RAM_SIZE) != 0) {
+			perror("Expanding ramfile to 16MB (SoC.h/RAM_SIZE) failed");
+			exit(-1);
+		}
+	}
+	
+	socInit(&soc, socRamModeCallout, coRamAccess, readchar, writechar, rootOps, root);
 	signal(SIGINT, &ctl_cHandler);
 	socRun(&soc, gdbPort);
+	
+	
+	//teardown the RAM disk
+	{
+		fclose(ramFile);
+	}
 	
 	fclose(root);
 	tcsetattr(0, TCSANOW, &old);

@@ -8,7 +8,13 @@
 #define MAX_WTP			32
 #define MAX_BKPT		32
 
+// Memory map-related constants
 
+#define ROM_BASE	0x00000000UL
+#define ROM_SIZE	sizeof(embedded_boot)
+
+#define RAM_BASE	0xA0000000UL
+#define RAM_SIZE	0x01000000UL	//16M @ 0xA0000000
 
 
 #ifndef GDB_SUPPORT
@@ -16,7 +22,6 @@
 		#define _JIT
 	#endif
 #endif
-
 
 
 #define CHAR_CTL_C	-1L
