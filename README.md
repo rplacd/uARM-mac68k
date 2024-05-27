@@ -8,6 +8,8 @@ So far, I have:
 
 Next, I will:
 
-- Move emulated RAM in the PC/macOS target into a file: now check to see whether we've reduced RAM usage by doing so to <1MB
+- Move emulated RAM in the PC/macOS target into a file: now check to see whether we've reduced RAM usage by doing so to <1MB. (We have 7MB so far!)
+
+<img width="671" alt="Screenshot 2024-05-27 at 5 53 51 AM" src="https://github.com/rplacd/uARM-mac68k/assets/147152/774c84e5-e1b9-4b10-9e35-d86a7487712d">
 
 - Create a rump mac68k target, that launches to some form of console IO, and make it work with some mac68k cross-compiler.
