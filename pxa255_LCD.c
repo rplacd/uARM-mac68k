@@ -1,6 +1,6 @@
 #include "pxa255_LCD.h"
 #include "mem.h"
-#include "SDL/SDL.h"
+#include <SDL.h>
 
 #define UNMASKABLE_INTS		0x7C8E
 

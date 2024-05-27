@@ -13,8 +13,6 @@
 #include <signal.h>
 #include <termios.h>
 
-
-#define off64_t __off64_t
 unsigned char* readFile(const char* name, UInt32* lenP){
 
 	long len = 0;
@@ -124,10 +122,10 @@ int rootOps(void* userData, UInt32 sector, void* buf, UInt8 op){
 				
 				if(root){
 					
-					i = fseeko64(root, 0, SEEK_END);
+					i = fseek(root, 0, SEEK_END);
 					if(i) return false;
 					
-					 *(unsigned long*)buf = (off64_t)ftello64(root) / (off64_t)BLK_DEV_BLK_SZ;
+					 *(unsigned long*)buf = ftell(root) / BLK_DEV_BLK_SZ;
 				}
 				else{
 					
@@ -143,13 +141,13 @@ int rootOps(void* userData, UInt32 sector, void* buf, UInt8 op){
 		
 		case BLK_OP_READ:
 			
-			i = fseeko64(root, (off64_t)sector * (off64_t)BLK_DEV_BLK_SZ, SEEK_SET);
+			i = fseek(root, sector * BLK_DEV_BLK_SZ, SEEK_SET);
 			if(i) return false;
 			return fread(buf, 1, BLK_DEV_BLK_SZ, root) == BLK_DEV_BLK_SZ;
 		
 		case BLK_OP_WRITE:
 			
-			i = fseeko64(root, (off64_t)sector * (off64_t)BLK_DEV_BLK_SZ, SEEK_SET);
+			i = fseek(root, sector * BLK_DEV_BLK_SZ, SEEK_SET);
 			if(i) return false;
 			return fwrite(buf, 1, BLK_DEV_BLK_SZ, root) == BLK_DEV_BLK_SZ;
 	}
@@ -177,7 +175,7 @@ int main(int argc, char** argv){
 		cfg = old;
 		if(ret) perror("cannot get term attrs");
 		
-		#ifndef _DARWIN_
+		#ifndef __APPLE__
 		
 			cfg.c_iflag &=~ (INLCR | INPCK | ISTRIP | IUCLC | IXANY | IXOFF | IXON);
 			cfg.c_oflag &=~ (OPOST | OLCUC | ONLCR | OCRNL | ONOCR | ONLRET);
@@ -190,7 +188,7 @@ int main(int argc, char** argv){
 		if(ret) perror("cannot set term attrs");
 	}
 	
-	root = fopen64(argv[1], "r+b");
+	root = fopen(argv[1], "r+b");
 	if(!root){
 		fprintf(stderr,"Failed to open root device\n");
 		exit(-1);

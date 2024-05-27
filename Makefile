@@ -2,6 +2,9 @@ APP	= uARM
 CC	= gcc
 LD	= gcc
 
+SDL_CC_OPTIONS := $(shell sdl-config --cflags)
+SDL_LD_OPTIONS := $(shell sdl-config --libs)
+
 BUILD ?= debug
 
 ifeq ($(BUILD), avr)
@@ -16,32 +19,32 @@ endif
 
 ifeq ($(BUILD), debug)
 	CC_FLAGS	= -O0 -g -ggdb -ggdb3 -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DLCD_SUPPORT
-	LD_FLAGS	= -O0 -g -ggdb -ggdb3 -lSDL
+	LD_FLAGS	= -O0 -g -ggdb -ggdb3 $(SDL_LD_OPTIONS)
 	EXTRA_OBJS	= main_pc.o
 endif
 
 ifeq ($(BUILD), profile)
 	CC_FLAGS	= -O3 -g -pg -fno-omit-frame-pointer -march=core2 -mpreferred-stack-boundary=4  -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
-	LD_FLAGS	= -O3 -g -pg -lSDL
+	LD_FLAGS	= -O3 -g -pg $(SDL_LD_OPTIONS)
 	EXTRA_OBJS	= main_pc.o
 endif
 
 ifeq ($(BUILD), opt)
 	CC_FLAGS	= -O3 -fomit-frame-pointer -march=core2 -mpreferred-stack-boundary=4 -momit-leaf-frame-pointer -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -flto
-	LD_FLAGS	= $(CC_FLAGS) -flto -O3 -lSDL 
+	LD_FLAGS	= $(CC_FLAGS) -flto -O3 $(SDL_LD_OPTIONS) 
 	EXTRA_OBJS	= main_pc.o
 endif
 
 ifeq ($(BUILD), opt64)
 	CC_FLAGS	= -m64 -O3 -fomit-frame-pointer -march=core2 -momit-leaf-frame-pointer -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
-	LD_FLAGS	= -O3 -lSDL
+	LD_FLAGS	= -O3 $(SDL_LD_OPTIONS)
 	EXTRA_OBJS	= main_pc.o
 endif
 
 LDFLAGS = $(LD_FLAGS) -Wall -Wextra
-CCFLAGS = $(CC_FLAGS) -Wall -Wextra
+CCFLAGS = $(CC_FLAGS) -Wall -Wextra $(SDL_CC_OPTIONS)
 
-OBJS	= $(EXTRA_OBJS) rt.o math64.o CPU.o MMU.o cp15.o mem.o RAM.o callout_RAM.o SoC.o pxa255_IC.o icache.o pxa255_TIMR.o pxa255_RTC.o pxa255_UART.o pxa255_PwrClk.o pxa255_GPIO.o pxa255_DMA.o pxa255_DSP.o pxa255_LCD.o
+OBJS	= $(EXTRA_OBJS) rt.o math64.o CPU.o MMU.o cp15.o mem.o RAM.o callout_RAM.o SoC.o icache.o pxa255_IC.o pxa255_TIMR.o pxa255_RTC.o pxa255_UART.o pxa255_PwrClk.o pxa255_GPIO.o pxa255_DMA.o pxa255_DSP.o pxa255_LCD.o
 
 $(APP): $(OBJS)
 	$(LD) -o $(APP) $(OBJS) $(LDFLAGS)
