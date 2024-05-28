@@ -1,9 +1,19 @@
+# Compiler and linker definitions.
+
 APP	= uARM
 CC	= gcc
 LD	= gcc
 
-SDL_CC_OPTIONS := $(shell sdl-config --cflags)
-SDL_LD_OPTIONS := $(shell sdl-config --libs)
+# Logic for optional SDL.
+
+SDL ?= no
+
+ifeq ($(SDL), yes)
+	SDL_CC_OPTIONS := $(shell sdl-config --cflags) -DUSE_SDL
+	SDL_LD_OPTIONS := $(shell sdl-config --libs)
+endif
+
+# Build type logic.
 
 BUILD ?= debug
 

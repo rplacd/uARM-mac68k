@@ -1,9 +1,7 @@
 #include "pxa255_LCD.h"
 #include "mem.h"
-#include <SDL.h>
 
 #define UNMASKABLE_INTS		0x7C8E
-
 
 static void pxa255lcdPrvUpdateInts(Pxa255lcd* lcd){
 	
@@ -222,7 +220,8 @@ static void pxa255LcdPrvDma(Pxa255lcd* lcd, void* dest, UInt32 addr, UInt32 len)
 	}
 }
 
-#ifndef EMBEDDED
+#if EMBEDDED || USE_SDL
+	#include <SDL.h>
 	#include <stdio.h>
 	
 	static _INLINE_ void pxa255LcdScreenDataPixel(Pxa255lcd* lcd, UInt8* buf){
