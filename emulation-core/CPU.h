@@ -5,7 +5,7 @@
 //#define ARM_V6		//define to allow v6 instructions
 //#define THUMB_2			//define to allow Thumb2
 
-#include "types.h"
+#include "../utilities/types.h"
 
 struct ArmCpu;
 

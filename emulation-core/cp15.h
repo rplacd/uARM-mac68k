@@ -2,7 +2,7 @@
 #define _CP15_H_
 
 
-#include "types.h"
+#include "../utilities/types.h"
 #include "CPU.h"
 #include "MMU.h"
 

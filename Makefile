@@ -24,7 +24,7 @@ ifeq ($(BUILD), avr)
 	CC              = avr-gcc
 	LD              = avr-gcc
 	EXTRA           = avr-size -Ax $(APP) && avr-objcopy -j .text -j .data -O ihex $(APP) $(APP).hex
-	EXTRA_OBJS      = SD.o main_avr.o avr_asm.o
+	EXTRA_OBJS      = ./emulation-core/SD.o main_avr.o avr_asm.o
 endif
 
 ifeq ($(BUILD), debug)
@@ -54,7 +54,16 @@ endif
 LDFLAGS = $(LD_FLAGS) -Wall -Wextra
 CCFLAGS = $(CC_FLAGS) -Wall -Wextra $(SDL_CC_OPTIONS)
 
-OBJS	= $(EXTRA_OBJS) rt.o math64.o CPU.o MMU.o cp15.o mem.o RAM.o callout_RAM.o SoC.o icache.o pxa255_IC.o pxa255_TIMR.o pxa255_RTC.o pxa255_UART.o pxa255_PwrClk.o pxa255_GPIO.o pxa255_DMA.o pxa255_DSP.o pxa255_LCD.o
+OBJS	= $(EXTRA_OBJS) ./utilities/math64.o \
+	./emulation-core/rt.o ./emulation-core/CPU.o \
+	./emulation-core/MMU.o ./emulation-core/cp15.o \
+	./emulation-core/mem.o ./emulation-core/RAM.o \
+	./emulation-core/callout_RAM.o ./emulation-core/SoC.o ./emulation-core/icache.o \
+	./emulation-core/pxa255_IC.o ./emulation-core/pxa255_TIMR.o \
+	./emulation-core/pxa255_RTC.o ./emulation-core/pxa255_UART.o \
+	./emulation-core/pxa255_PwrClk.o ./emulation-core/pxa255_GPIO.o \
+	./emulation-core/pxa255_DMA.o ./emulation-core/pxa255_DSP.o \
+	./emulation-core/pxa255_LCD.o
 
 $(APP): $(OBJS)
 	$(LD) -o $(APP) $(OBJS) $(LDFLAGS)

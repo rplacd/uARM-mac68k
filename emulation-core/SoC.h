@@ -1,7 +1,7 @@
 #ifndef _SOC_H_
 #define _SOC_H_
 
-#include "types.h"
+#include "../utilities/types.h"
 
 //#define GDB_SUPPORT
 //#define DYNAREC
@@ -64,7 +64,7 @@ extern volatile UInt32 gRtc;	//needed by SoC
 #include "callout_RAM.h"
 #include "RAM.h"
 #include "cp15.h"
-#include "math64.h"
+#include "../utilities/math64.h"
 #include "pxa255_IC.h"
 #include "pxa255_TIMR.h"
 #include "pxa255_RTC.h"

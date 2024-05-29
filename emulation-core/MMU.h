@@ -2,7 +2,7 @@
 #define _MMU_H_
 
 
-#include "types.h"
+#include "../utilities/types.h"
 
 
 #define MMU_TLB_BUCKET_SIZE	8

@@ -5,7 +5,7 @@
 #include "callout_RAM.h"
 #include "RAM.h"
 #include "cp15.h"
-#include "math64.h"
+#include "../utilities/math64.h"
 #include "pxa255_IC.h"
 #include "pxa255_TIMR.h"
 #include "pxa255_RTC.h"

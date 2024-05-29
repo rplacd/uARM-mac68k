@@ -1,7 +1,7 @@
 #ifndef _MEM_H_
 #define _MEM_H_
 
-#include "types.h"
+#include "../utilities/types.h"
 
 #define MAX_MEM_REGIONS		16
 

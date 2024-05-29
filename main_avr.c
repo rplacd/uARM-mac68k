@@ -14,7 +14,7 @@
 
 #undef SPSR	//avr code defines it
 
-#include "SoC.h"
+#include "emulation-core/SoC.h"
 #include "SD.h"
 #include "callout_RAM.h"
 

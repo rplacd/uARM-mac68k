@@ -2,7 +2,7 @@
 #define _CO_RAM_H_
 
 
-#include "types.h"
+#include "../utilities/types.h"
 #include "mem.h"
 
 typedef struct{
