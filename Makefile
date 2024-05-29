@@ -78,7 +78,7 @@ help:
 	@echo "make clean | system6 | BUILD = (avr | debug | profile | opt | opt64) [SDL = no | yes]"
 
 clean:
-	rm -f $(APP) *.o
+	rm -f $(APP) ./*/*.o
 	
 system7:
 	# Assume that cross-compilation with Retro68 is different enough to require a whole

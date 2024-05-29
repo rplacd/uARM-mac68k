@@ -1,4 +1,4 @@
-#include "SoC.h"
+#include "emulation-core/SoC.h"
 
 	
 #include <sys/time.h>
@@ -155,7 +155,7 @@ int rootOps(void* userData, UInt32 sector, void* buf, UInt8 op){
 }
 
 SoC soc;
-const char* ramFilePath = "RAM_16MB.bin";
+const char* ramFilePath = "16 MB of RAM";
 FILE *ramFile; // 16MB, per RAM_SIZE in SoC.c
 
 
