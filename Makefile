@@ -4,7 +4,7 @@ APP	= uARM
 CC	= gcc
 LD	= gcc
 
-# Logic for optional SDL.
+# Logic for optional SDL=yes flag.
 
 SDL ?= no
 
@@ -135,7 +135,14 @@ main_avr.o: SoC.h main_avr.c types.h
 rt.o: rt.c types.h
 	$(CC) $(CCFLAGS) -o rt.o -c rt.c
 
+# Non-standard (AVR or *nix) compilation make targets.
+
+help:
+	@echo "make clean | system6 | BUILD = (avr | debug | profile | opt | opt64) [SDL = no | yes]"
+
 clean:
 	rm -f $(APP) *.o
-
-
+	
+system7:
+	# Assume that cross-compilation with Retro68 is different enough to require a whole
+	# different target, because there's a lot of packaging steps afterwards.
