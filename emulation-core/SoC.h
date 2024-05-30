@@ -52,7 +52,18 @@ void socRamModeAlloc(struct SoC* soc, void* ignored);
 void socRamModeCallout(struct SoC* soc, void* callout);	//rally pointer to RamCallout
 
 void socInit(struct SoC* soc, SocRamAddF raF, void* raD, readcharF rc, writecharF wc, blockOp blkF, void* blkD);
-void socRun(struct SoC* soc, UInt32 gdbPort);
+
+typedef struct {
+// Upon first use initialize all variables as 0.
+	UInt32 prevRtc;
+	UInt32 cyclesCapt;
+	UInt32 cycles;	//make 64 if you REALLY need it... later
+} socRunState;
+
+void socRunStateInit(socRunState *state);
+
+Boolean socCycle(struct SoC* soc, UInt32 gdbPort, socRunState *state);
+	// return true if socCycle actually ran a cycle.
 
 
 

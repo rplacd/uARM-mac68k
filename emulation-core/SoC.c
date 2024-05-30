@@ -265,12 +265,13 @@ void socInit(SoC* soc, SocRamAddF raF, void*raD, readcharF rc, writecharF wc, bl
 
 void gdbCmdWait(SoC* soc, unsigned gdbPort, int* ss);
 
-void socRun(SoC* soc, UInt32 gdbPort){
-	
+void socRunStateInit(socRunState *state) {
 	UInt32 prevRtc = 0;
 	UInt32 cyclesCapt = 0;
-	
-	UInt32 cycles = 0;	//make 64 if you REALLY need it... later
+	UInt32 cycles = 0;
+}
+
+Boolean socCycle(SoC* soc, UInt32 gdbPort, socRunState *state) {
 	
 	#ifdef GDB_SUPPORT
 		int ss = 1;	//for gdb stub single step
@@ -278,19 +279,16 @@ void socRun(SoC* soc, UInt32 gdbPort){
 		gdbPort = 0;	//use the param somehow to quiet GCC
 	#endif
 	
-	while(soc->go){
-		
-		cycles++;
-
-	#ifdef EMBEDDED	
+	if(soc->go) {
+		state->cycles++;
+		#ifdef EMBEDDED	
 		if(!(PIND & 0x10)){	//btn down
 		
-			if(!prevRtc){
-			
+			if(!state->prevRtc){
 				do{
-					prevRtc = gRtc;
-				}while(prevRtc != gRtc);
-				cyclesCapt = 0;
+					state->prevRtc = gRtc;
+				}while(state->prevRtc != gRtc);
+				state->cyclesCapt = 0;
 			}
 			else{
 			
@@ -301,38 +299,39 @@ void socRun(SoC* soc, UInt32 gdbPort){
 					t = gRtc;
 				}while(t != gRtc);
 				
-				if(t != prevRtc){
+				if(t != state->prevRtc){
 				
-					if(!cyclesCapt){
+					if(!state->cyclesCapt){
 						
 						//this code assumes we're called often enough that the next rtc vals we see is the NEXT second, not the one after or any other such thing
-						cyclesCapt = cycles;
-						prevRtc = t;
+						state->cyclesCapt = cycles;
+						state->prevRtc = t;
 					}
 					else{
 					
-						err_dec(cycles - cyclesCapt);
+						err_dec(state->cycles - state->cyclesCapt);
 						err_str(" Hz\r\n");
 					
-						cyclesCapt = 0;
-						prevRtc = 0;
+						state->cyclesCapt = 0;
+						state->prevRtc = 0;
 					}
 				}
 			}
 		}
 	#endif		
 		
-		if(!(cycles & 0x000007UL)) pxa255timrTick(&soc->timr);
-		if(!(cycles & 0x0000FFUL)) pxa255uartProcess(&soc->ffuart);
-		if(!(cycles & 0x000FFFUL)) pxa255rtcUpdate(&soc->rtc);
-		if(!(cycles & 0x01FFFFUL)) pxa255lcdFrame(&soc->lcd);
+		if(!(state->cycles & 0x000007UL)) pxa255timrTick(&soc->timr);
+		if(!(state->cycles & 0x0000FFUL)) pxa255uartProcess(&soc->ffuart);
+		if(!(state->cycles & 0x000FFFUL)) pxa255rtcUpdate(&soc->rtc);
+		if(!(state->cycles & 0x01FFFFUL)) pxa255lcdFrame(&soc->lcd);
 		
 		#ifdef GDB_SUPPORT
 			gdbCmdWait(soc, gdbPort, &ss);
 		#endif
 		
 		cpuCycle(&soc->cpu);
-	}
+		return true;
+	} else return false;
 }
 
 

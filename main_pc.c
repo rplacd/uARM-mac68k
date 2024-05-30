@@ -258,10 +258,20 @@ int main(int argc, char** argv){
 		}
 	}
 	
+	// Set up SoC, and then run the main loop
+	
 	socInit(&soc, socRamModeCallout, coRamAccess, readchar, writechar, rootOps, root);
 	signal(SIGINT, &ctl_cHandler);
-	socRun(&soc, gdbPort);
 	
+	socRunState runState;
+	socRunStateInit(&runState);
+	
+	Boolean going;
+	
+	// Main loop. Might choose to receive UI events here, for example.
+	do {
+		going = socCycle(&soc, gdbPort, &runState);
+	} while(going);
 	
 	//teardown the RAM disk
 	{

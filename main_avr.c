@@ -356,7 +356,15 @@ int main(){
 		soc.cpu.regs[15] = 0xA0E00000UL+512UL;
 	}
 
-	socRun(&soc, 0);
+	socRunState runState;
+	socRunStateInit(&runState);
+	
+	Boolean going;
+	
+	// Main loop. Might choose to receive UI events here, for example.
+	do {
+		going = socCycle(&soc, 0, &runState);
+	} while(going);
 
 	while(1);
 
