@@ -1,4 +1,5 @@
 #include "emulation-core/SoC.h"
+#include "emulation-core/callout_RAM.h"
 
 	
 #include <sys/time.h>
@@ -165,6 +166,20 @@ Boolean coRamAccess(_UNUSED_ CalloutRam* ram, UInt32 addr, UInt8 size, Boolean w
 
 	UInt8* b = bufP;
 	
+	// The physical memory map seen by the SoC maps RAM to the region RAM_BASE, RAM_BASE + RAM_SIZE.
+	// Therefore, to map to RAM device adresses, subtract RAM_BASE.
+	addr = addr - RAM_BASE;
+	
+	#ifndef NDEBUG
+	// Optionally, double-check to see whether addr <= RAM_SIZE; this catches cases where
+	// 'addr' is a logical address instead of a physical one.
+	if(addr >= RAM_SIZE) {
+		printf("Error accessing ramfile: requested address larger than physical limits. Are you using logical addresses?\n");
+		printf("%x >= %x\n", addr, RAM_SIZE);
+		exit(-1);
+	}
+	#endif
+	
 	if(fseek(ramFile, addr, SEEK_SET) != 0) {
 		perror("Error accessing location in ramfile");
 		exit(-1);
@@ -178,7 +193,7 @@ Boolean coRamAccess(_UNUSED_ CalloutRam* ram, UInt32 addr, UInt8 size, Boolean w
 		// signal an error condition with its return value,
 		// so we manually check for error conditions:
 		if (feof(ramFile)) {
-			printf("Error wrtiing to ramfile: end of file");
+			printf("Error writing to ramfile: end of file");
 			exit(-1);
 		} else if (ferror(ramFile)) {
 			perror("Error writing to ramfile");
