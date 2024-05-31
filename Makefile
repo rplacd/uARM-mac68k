@@ -40,13 +40,13 @@ ifeq ($(BUILD), profile)
 endif
 
 ifeq ($(BUILD), opt)
-	CC_FLAGS	= -O3 -fomit-frame-pointer -march=core2 -mpreferred-stack-boundary=4 -momit-leaf-frame-pointer -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -flto
+	CC_FLAGS	= -O3 -fomit-frame-pointer -march=core2 -mpreferred-stack-boundary=4 -momit-leaf-frame-pointer -DNDEBUG -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -flto
 	LD_FLAGS	= $(CC_FLAGS) -flto -O3 $(SDL_LD_OPTIONS) 
 	EXTRA_OBJS	= main_pc.o
 endif
 
 ifeq ($(BUILD), opt64)
-	CC_FLAGS	= -m64 -O3 -fomit-frame-pointer -march=core2 -momit-leaf-frame-pointer -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
+	CC_FLAGS	= -m64 -O3 -fomit-frame-pointer -march=core2 -momit-leaf-frame-pointer -DNDEBUG -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 	LD_FLAGS	= -O3 $(SDL_LD_OPTIONS)
 	EXTRA_OBJS	= main_pc.o
 endif
@@ -78,7 +78,7 @@ help:
 	@echo "make clean | system6 | BUILD = (avr | debug | profile | opt | opt64) [SDL = no | yes]"
 
 clean:
-	rm -f $(APP) ./*/*.o
+	rm -f $(APP) *.o ./*/*.o
 	
 system7:
 	# Assume that cross-compilation with Retro68 is different enough to require a whole
