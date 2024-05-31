@@ -52,7 +52,7 @@ ifeq ($(BUILD), opt64)
 endif
 
 LDFLAGS = $(LD_FLAGS) -Wall -Wextra
-CCFLAGS = $(CC_FLAGS) -Wall -Wextra $(SDL_CC_OPTIONS)
+CFLAGS = $(CC_FLAGS) -Wall -Wextra -std=c89 $(SDL_CC_OPTIONS)
 
 OBJS	= $(EXTRA_OBJS) ./utilities/math64.o \
 	./emulation-core/rt.o ./emulation-core/CPU.o \
