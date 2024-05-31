@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+	// Needed for ftruncate
 #include <sys/types.h>
 #include <string.h>
 #include <sys/stat.h>
@@ -67,6 +68,8 @@ unsigned char* readFile(const char* name, UInt32* lenP){
 static int ctlCSeen = 0;
 
 static int readchar(void){
+	// Do a non-blocking getchar, synthesizing control-c using
+	// a custom SIGINT handler, and returning CHAR_NONE otherwise
 	
 	struct timeval tv;
 	fd_set set;
@@ -251,6 +254,11 @@ int main(int argc, char** argv){
 		if(ret) perror("cannot set term attrs");
 	}
 	
+	// custom SIGINT (ctrl-c) handler, that sets a flag to
+	// pass along an interrupt char to the emulated OS
+	signal(SIGINT, &ctl_cHandler);
+	
+	
 	root = fopen(argv[1], "r+b");
 	if(!root){
 		fprintf(stderr,"Failed to open root device\n");
@@ -274,9 +282,7 @@ int main(int argc, char** argv){
 	}
 	
 	// Set up SoC, and then run the main loop
-	
 	socInit(&soc, socRamModeCallout, coRamAccess, readchar, writechar, rootOps, root);
-	signal(SIGINT, &ctl_cHandler);
 	
 	socRunState runState;
 	socRunStateInit(&runState);
