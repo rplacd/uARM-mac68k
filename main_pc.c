@@ -1,8 +1,8 @@
 #include "emulation-core/SoC.h"
 #include "emulation-core/callout_RAM.h"
 
-	
 #include <sys/time.h>
+#include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -178,7 +178,7 @@ Boolean coRamAccess(_UNUSED_ CalloutRam* ram, UInt32 addr, UInt8 size, Boolean w
 	// 'addr' is a logical address instead of a physical one.
 	if(addr >= RAM_SIZE) {
 		printf("Error accessing ramfile: requested address larger than physical limits. Are you using logical addresses?\n");
-		printf("%x >= %x\n", addr, RAM_SIZE);
+		printf("%x >= %lu\n", addr, RAM_SIZE);
 		exit(-1);
 	}
 	#endif
@@ -212,7 +212,7 @@ Boolean coRamAccess(_UNUSED_ CalloutRam* ram, UInt32 addr, UInt8 size, Boolean w
 				perror("Error writing to ramfile");
 				exit(-1);
 			} else {
-				printf("Error writing to ramfile: some other error\n");
+				printf("Error writing to ramfile: some other error");
 				exit(-1);
 			}
 		}
@@ -227,8 +227,9 @@ int main(int argc, char** argv){
 	FILE* root = NULL;
 	int gdbPort = 0;
 	
-	if(argc != 3 && argc != 2){
-		fprintf(stderr,"usage: %s path_to_disk [gdbPort]\n", argv[0]);
+	if(argc <= 1 || argc >= 4){
+		PRINT_HELP_AND_QUIT:
+		fprintf(stderr,"usage: %s path_to_disk [with-telemetry] [gdbPort]]", argv[0]);
 		return -1;	
 	}
 	
@@ -256,16 +257,46 @@ int main(int argc, char** argv){
 	
 	// custom SIGINT (ctrl-c) handler, that sets a flag to
 	// pass along an interrupt char to the emulated OS
+
 	signal(SIGINT, &ctl_cHandler);
 	
 	
+	// handle argv[2] – boot image
 	root = fopen(argv[1], "r+b");
 	if(!root){
 		fprintf(stderr,"Failed to open root device\n");
 		exit(-1);
 	}
 	
-	if(argc >= 3) gdbPort = atoi(argv[2]);
+	// handle argv[3] - with-statusfile
+	Boolean withStatusFile = 0;
+	
+		// If with-statusfile is given, this is the state
+		// we will put into the statusfile
+	FILE *statusfile = NULL;
+	unsigned long totalCycles = 0;
+	time_t lastCycleAt = clock();
+	
+	if(argc >= 3) {
+		// The only item that can appear as a second param is "with-telemetry"
+		// but double check anyway
+		if(0 == strncmp("with-telemetry", argv[2], 15)) {
+			withStatusFile = 1;
+			
+			statusfile = fopen("Telemetry File", "w");
+			
+			if(NULL == statusfile) {
+				perror("Can't create or open statusfile");
+				exit(-1);
+			}
+	
+		} else goto PRINT_HELP_AND_QUIT;
+	}
+	
+	
+	// handle argv[4] - gdb port
+	
+	if(argc >= 4) gdbPort = atoi(argv[3]);
 	
 	
 	//setup the RAM disk
@@ -292,6 +323,21 @@ int main(int argc, char** argv){
 	// Main loop. Might choose to receive UI events here, for example.
 	do {
 		going = socCycle(&soc, gdbPort, &runState);
+		
+		if(withStatusFile) {
+		// Overwrite statusfile (that is, refresh status displayed.)
+			totalCycles++;
+			time_t now = clock();
+			time_t cycleTime = difftime(now, lastCycleAt);
+			lastCycleAt = now;
+			
+			rewind(statusfile);
+			
+			// write new status
+			fprintf(statusfile, "at time: %lu\ntotal cycles (possible overflow): %lu\ntime this cycle took: %lu\n",
+				now, totalCycles, cycleTime);
+			fflush(statusfile);
+		}
 	} while(going);
 	
 	//teardown the RAM disk
@@ -299,6 +345,7 @@ int main(int argc, char** argv){
 		fclose(ramFile);
 	}
 	
+	//cleanup opened files
 	fclose(root);
 	tcsetattr(0, TCSANOW, &old);
 	
