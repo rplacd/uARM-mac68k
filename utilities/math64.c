@@ -1,3 +1,4 @@
+#include "compiler_hacks.h"
 #include "math64.h"
 
 #ifndef COMPILER_SUPPORTS_LONG_LONG

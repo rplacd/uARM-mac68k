@@ -1,3 +1,4 @@
+#include "../utilities/compiler_hacks.h"
 #include "../utilities/types.h"
 
 void err_hex(UInt32 val){

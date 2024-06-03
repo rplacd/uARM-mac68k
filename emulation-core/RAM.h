@@ -1,7 +1,7 @@
 #ifndef _RAM_H_
 #define _RAM_H_
 
-
+#include "../utilities/compiler_hacks.h"
 #include "../utilities/types.h"
 
 typedef struct{

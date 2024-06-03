@@ -1,3 +1,4 @@
+#include "../utilities/compiler_hacks.h"
 #include "types.h"
 #include "CPU.h"
 #include "dcache.h"

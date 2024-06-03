@@ -1,3 +1,4 @@
+#include "../utilities/compiler_hacks.h"
 #include "SoC.h"
 #include "CPU.h"
 #include "MMU.h"

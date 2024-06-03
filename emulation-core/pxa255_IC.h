@@ -1,6 +1,7 @@
 #ifndef _PXA255_IC_H_
 #define _PXA255_IC_H_
 
+#include "../utilities/compiler_hacks.h"
 #include "mem.h"
 #include "CPU.h"
 #include <stdio.h> 

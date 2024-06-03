@@ -1,6 +1,7 @@
 #ifndef _TYPES_H_
 #define _TYPES_H_
 
+#include "compiler_hacks.h"
 #include <stdint.h>
 
 
@@ -24,11 +25,6 @@ typedef unsigned char Boolean;
 
 #define errNone		0x00
 #define errInternal	0x01
-
-
-#define _INLINE_   	inline __attribute__ ((always_inline))
-#define _UNUSED_	__attribute__((unused))
-
 
 /* runtime stuffs */
 void err_str(const char* str);

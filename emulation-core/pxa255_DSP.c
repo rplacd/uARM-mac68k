@@ -1,3 +1,4 @@
+#include "../utilities/compiler_hacks.h"
 #include "../utilities/math64.h"
 #include "pxa255_DSP.h"
 

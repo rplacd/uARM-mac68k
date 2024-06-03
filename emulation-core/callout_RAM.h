@@ -1,7 +1,7 @@
 #ifndef _CO_RAM_H_
 #define _CO_RAM_H_
 
-
+#include "../utilities/compiler_hacks.h"
 #include "../utilities/types.h"
 #include "mem.h"
 

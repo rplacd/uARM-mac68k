@@ -1,3 +1,4 @@
+#include "../utilities/compiler_hacks.h"
 #include "mem.h"
 #include "callout_RAM.h"
 

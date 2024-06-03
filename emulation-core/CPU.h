@@ -1,6 +1,7 @@
 #ifndef _CPU_H_
 #define _CPU_H_
 
+#include "../utilities/compiler_hacks.h"
 
 //#define ARM_V6		//define to allow v6 instructions
 //#define THUMB_2			//define to allow Thumb2

@@ -1,7 +1,7 @@
 #ifndef _DCACHE_H_
 #define _DCACHE_H_
 
-
+#include "../utilities/compiler_hacks.h"
 #include "types.h"
 #include "CPU.h"
 

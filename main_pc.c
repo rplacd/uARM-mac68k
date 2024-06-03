@@ -1,3 +1,5 @@
+#include "utilities/compiler_hacks.h"
+
 #include "emulation-core/SoC.h"
 #include "emulation-core/callout_RAM.h"
 

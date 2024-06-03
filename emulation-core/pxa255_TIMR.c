@@ -1,3 +1,4 @@
+#include "../utilities/compiler_hacks.h"
 #include "pxa255_TIMR.h"
 #include "mem.h"
 

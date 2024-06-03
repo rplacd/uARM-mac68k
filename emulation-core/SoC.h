@@ -1,6 +1,7 @@
 #ifndef _SOC_H_
 #define _SOC_H_
 
+#include "../utilities/compiler_hacks.h"
 #include "../utilities/types.h"
 
 //#define GDB_SUPPORT

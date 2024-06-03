@@ -1,6 +1,7 @@
 #ifndef _MATH_64_H_
 #define _MATH_64_H_
 
+#include "compiler_hacks.h"
 #include "types.h"
 
 #define COMPILER_SUPPORTS_LONG_LONG		//undefine if compiler doe snot uspport long long
