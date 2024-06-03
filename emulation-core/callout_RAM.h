@@ -13,7 +13,7 @@ typedef struct{
 }CalloutRam;
 
 
-Boolean coRamInit(CalloutRam* ram, ArmMem* mem, UInt32 adr, UInt32 sz, ArmMemAccessF* coF);
+Boolean coRamInit(CalloutRam* ram, ArmMem* mem, UInt32 adr, UInt32 sz, ArmMemAccessF coF);
 Boolean coRamDeinit(CalloutRam* ram, ArmMem* mem);
 
 
