@@ -35,7 +35,7 @@ static void pxa255gpioPrvRecalcIntrs(Pxa255gpio* gpio){
 
 static Boolean pxa255gpioPrvMemAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* buf){
 
-	Pxa255gpio* gpio = userData;
+	Pxa255gpio* gpio = (Pxa255gpio*)userData;
 	UInt32 val = 0;
 	
 	if(size != 4) {

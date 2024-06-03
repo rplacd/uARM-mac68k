@@ -3,6 +3,7 @@
 
 #include "../utilities/compiler_hacks.h"
 #include "../utilities/types.h"
+#include "mem.h"
 
 //#define GDB_SUPPORT
 //#define DYNAREC
@@ -40,7 +41,7 @@ typedef int (*blockOp)(void* data, UInt32 sec, void* ptr, UInt8 op);
 
 struct SoC;
 
-typedef void (*SocRamAddF)(struct SoC* soc, void* data);
+typedef void (*SocRamAddF)(struct SoC* soc, ArmMemAccessF data);
 
 typedef struct{
 	
@@ -49,10 +50,10 @@ typedef struct{
 	
 }RamCallout;
 
-void socRamModeAlloc(struct SoC* soc, void* ignored);
-void socRamModeCallout(struct SoC* soc, void* callout);	//rally pointer to RamCallout
+void socRamModeAlloc(struct SoC* soc, ArmMemAccessF ignored);
+void socRamModeCallout(struct SoC* soc, ArmMemAccessF callout);	//rally pointer to RamCallout
 
-void socInit(struct SoC* soc, SocRamAddF raF, void* raD, readcharF rc, writecharF wc, blockOp blkF, void* blkD);
+void socInit(struct SoC* soc, SocRamAddF raF, ArmMemAccessF raD, readcharF rc, writecharF wc, blockOp blkF, void* blkD);
 
 typedef struct {
 // Upon first use initialize all variables as 0.

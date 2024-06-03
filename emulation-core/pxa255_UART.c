@@ -219,7 +219,7 @@ static void sendVal(Pxa255uart* uart, UInt16 v){
 
 static Boolean pxa255uartPrvMemAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* buf){
 
-	Pxa255uart* uart = userData;
+	Pxa255uart* uart = (Pxa255uart*)userData;
 	Boolean DLAB = (uart->LCR & UART_LCR_DLAB) != 0;
 	Boolean recalcValues = false;
 	UInt8 t, val = 0;

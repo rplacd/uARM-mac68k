@@ -30,7 +30,7 @@ static void pxa255timrPrvUpdate(Pxa255timr* timr){
 
 static Boolean pxa255timrPrvMemAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* buf){
 
-	Pxa255timr* timr = userData;
+	Pxa255timr* timr = (Pxa255timr*)userData;
 	UInt32 val = 0;
 	
 	if(size != 4) {

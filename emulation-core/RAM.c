@@ -6,7 +6,7 @@
 	
 static Boolean ramAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* bufP){
 	
-	ArmRam* ram = userData;
+	ArmRam* ram = (ArmRam*)userData;
 	UInt8* addr = (UInt8*)ram->buf;
 	
 	pa -= ram->adr;

@@ -38,15 +38,15 @@ void err_dec(UInt32 val){
 
 void __mem_zero(void* ptr, UInt16 sz){
 	
-	UInt8* p = ptr;
+	UInt8* p = (UInt8*)ptr;
 	
 	while(sz--) *p++ = 0;	
 }
 
 void __mem_copy(void* d_, const void* s_, UInt32 sz){
 	
-	UInt8* d = d_;
-	const UInt8* s = s_;
+	UInt8* d = (UInt8*)d_;
+	const UInt8* s = (UInt8*)s_;
 	
 	while(sz--) *d++ = *s++;
 }

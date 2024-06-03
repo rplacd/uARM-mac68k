@@ -23,7 +23,7 @@ void pxa255rtcPrvUpdate(Pxa255rtc* rtc){
 
 static Boolean pxa255rtcPrvMemAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* buf){
 
-	Pxa255rtc* rtc = userData;
+	Pxa255rtc* rtc = (Pxa255rtc*)userData;
 	UInt32 val = 0;
 	
 	if(size != 4) {

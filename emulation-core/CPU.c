@@ -12,6 +12,7 @@
 #include "../utilities/compiler_hacks.h"
 #include "CPU.h"
 #include "../utilities/math64.h"
+#include <stddef.h>
 
 
 

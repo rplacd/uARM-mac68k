@@ -1,5 +1,6 @@
 #include "../utilities/compiler_hacks.h"
 #include "cp15.h"
+#include <stddef.h>
 
 
 #define CPUID_PXA255		0x69052D06UL	//spepping A0
@@ -7,7 +8,7 @@
 
 static Boolean cp15prvCoprocRegXferFunc(struct ArmCpu* cpu, void* userData, Boolean two, Boolean read, UInt8 op1, UInt8 Rx, UInt8 CRn, UInt8 CRm, UInt8 op2){
 	
-	ArmCP15* cp15 = userData;
+	ArmCP15* cp15 = (ArmCP15*)userData;
 	UInt32 val = 0, tmp;
 	
 	

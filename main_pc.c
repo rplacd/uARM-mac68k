@@ -49,7 +49,7 @@ unsigned char* readFile(const char* name, UInt32* lenP){
 	}
 	
 	
-	r = malloc(len);
+	r = (unsigned char*)malloc(len);
 	if(!r){
 		perror("cannot alloc memory");
 		return NULL;
@@ -117,8 +117,9 @@ void ctl_cHandler(_UNUSED_ int v){	//handle SIGTERM
 }
 
 int rootOps(void* userData, UInt32 sector, void* buf, UInt8 op){
+	// NB: rootOps is of type ArmMemAccessF.
 	
-	FILE* root = userData;
+	FILE* root = (FILE*)userData;
 	int i;
 	
 	switch(op){
@@ -165,11 +166,13 @@ const char* ramFilePath = "16 MB of RAM";
 FILE *ramFile; // 16MB, per RAM_SIZE in SoC.c
 
 
-Boolean coRamAccess(_UNUSED_ CalloutRam* ram, UInt32 addr, UInt8 size, Boolean write, void* bufP) {
-// Below, we ran socInit(&soc, socRamModeCallout, coRamAccess, ...
-// As a result, this fucntion (coRamAccess) is a callback that handles memory operations.
+Boolean coRamAccess(_UNUSED_ void* ram, UInt32 addr, UInt8 size, Boolean write, void* bufP) {
+	// NB: coRamAccess is of type mem.h::ArmRamAccessF.
+	
+	// Below, we ran socInit(&soc, socRamModeCallout, coRamAccess, ...
+	// As a result, this fucntion (coRamAccess) is a callback that handles memory operations.
 
-	UInt8* b = bufP;
+	UInt8* b = (UInt8*)bufP;
 	
 	// The physical memory map seen by the SoC maps RAM to the region RAM_BASE, RAM_BASE + RAM_SIZE.
 	// Therefore, to map to RAM device adresses, subtract RAM_BASE.

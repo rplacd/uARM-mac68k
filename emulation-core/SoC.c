@@ -37,7 +37,7 @@ static const UInt8 embedded_boot[] =	{
 
 static Boolean vMemF(ArmCpu* cpu, void* buf, UInt32 vaddr, UInt8 size, Boolean write, Boolean priviledged, UInt8* fsrP){
 	
-	SoC* soc = cpu->userData;
+	SoC* soc = (SoC*)cpu->userData;
 	UInt32 pa;
 	
 	if(size & (size - 1)){	//size is not a power of two
@@ -55,7 +55,7 @@ static Boolean vMemF(ArmCpu* cpu, void* buf, UInt32 vaddr, UInt8 size, Boolean w
 
 static Boolean hyperF(ArmCpu* cpu){		//return true if handled
 
-	SoC* soc = cpu->userData;
+	SoC* soc = (SoC*)cpu->userData;
 	
 	switch(cpu->regs[12]){
 	
@@ -123,7 +123,7 @@ static Boolean hyperF(ArmCpu* cpu){		//return true if handled
 
 static void setFaultAdrF(ArmCpu* cpu, UInt32 adr, UInt8 faultStatus){
 	
-	SoC* soc = cpu->userData;
+	SoC* soc = (SoC*)cpu->userData;
 	
 	cp15SetFaultStatus(&soc->cp15, adr, faultStatus);
 }
@@ -137,7 +137,7 @@ static void emulErrF(_UNUSED_ ArmCpu* cpu, const char* str){
 
 static Boolean pMemReadF(void* userData, UInt32* buf, UInt32 pa){	//for DMA engine and MMU pagetable walks
 
-	ArmMem* mem = userData;
+	ArmMem* mem = (ArmMem*)userData;
 
 	return memAccess(mem, pa, 4, false, buf);
 }
@@ -168,7 +168,7 @@ static void dumpCpuState(ArmCpu* cpu, char* label){
 
 static UInt16 socUartPrvRead(void* userData){			//these are special funcs since they always get their own userData - the uart :)
 	
-	SoC* soc = userData;
+	SoC* soc = (SoC*)userData;
 	UInt16 v;
 	int r;
 	
@@ -183,7 +183,7 @@ static UInt16 socUartPrvRead(void* userData){			//these are special funcs since 
 
 static void socUartPrvWrite(UInt16 chr, void* userData){	//these are special funcs since they always get their own userData - the uart :)
 	
-	SoC* soc = userData;
+	SoC* soc = (SoC*)userData;
 	
 	if(chr == UART_CHAR_NONE) return;
 	soc->wcF(chr);
@@ -192,16 +192,16 @@ static void socUartPrvWrite(UInt16 chr, void* userData){	//these are special fun
 void LinkError_SIZEOF_STRUCT_SOC_wrong();
 
 
-void socRamModeAlloc(SoC* soc, _UNUSED_ void* ignored){
+void socRamModeAlloc(SoC* soc, _UNUSED_ ArmMemAccessF ignored){
 	
-	UInt32* ramB = emu_alloc(RAM_SIZE);
+	UInt32* ramB = (UInt32*)emu_alloc(RAM_SIZE);
 	if(!ramB) ERR("Cannot allocate RAM buffer");
 	if(!ramInit(&soc->ram.RAM, &soc->mem, RAM_BASE, RAM_SIZE, ramB)) ERR("Cannot init RAM");
 	
 	soc->calloutMem = false;	
 }
 
-void socRamModeCallout(SoC* soc, void* callout){
+void socRamModeCallout(SoC* soc, ArmMemAccessF callout){
 	
 	if(!coRamInit(&soc->ram.coRAM, &soc->mem, RAM_BASE, RAM_SIZE, callout)) ERR("Cannot init coRAM");
 	
@@ -210,7 +210,7 @@ void socRamModeCallout(SoC* soc, void* callout){
 
 #define ERR_(s)	ERR("error");
 
-void socInit(SoC* soc, SocRamAddF raF, void*raD, readcharF rc, writecharF wc, blockOp blkF, void* blkD){
+void socInit(SoC* soc, SocRamAddF raF, ArmMemAccessF raD, readcharF rc, writecharF wc, blockOp blkF, void* blkD){
 
 	Err e;
 	

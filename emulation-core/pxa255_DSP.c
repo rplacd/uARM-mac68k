@@ -1,13 +1,11 @@
 #include "../utilities/compiler_hacks.h"
 #include "../utilities/math64.h"
 #include "pxa255_DSP.h"
-
-
-
+#include <stddef.h>
 
 Boolean pxa255dspAccess(struct ArmCpu* cpu, void* userData, Boolean MRRC, UInt8 op, UInt8 RdLo, UInt8 RdHi, UInt8 acc){
 	
-	Pxa255dsp* dsp = userData;
+	Pxa255dsp* dsp = (Pxa255dsp*)userData;
 	
 	if(acc != 0 || op != 0) return false;				//bad encoding
 	
@@ -26,7 +24,7 @@ Boolean pxa255dspAccess(struct ArmCpu* cpu, void* userData, Boolean MRRC, UInt8 
 
 Boolean	pxa255dspOp(struct ArmCpu* cpu, void* userData, Boolean two/* MCR2/MRC2 ? */, Boolean MRC, UInt8 op1, UInt8 Rs, UInt8 opcode_3, UInt8 Rm, UInt8 acc){
 	
-	Pxa255dsp* dsp = userData;
+	Pxa255dsp* dsp = (Pxa255dsp*)userData;
 	UInt64 addend = u64_zero();
 	UInt32 Vs, Vm;
 	

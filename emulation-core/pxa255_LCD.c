@@ -17,7 +17,7 @@ static void pxa255lcdPrvUpdateInts(Pxa255lcd* lcd){
 
 static Boolean pxa255lcdPrvMemAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* buf){
 
-	Pxa255lcd* lcd = userData;
+	Pxa255lcd* lcd = (Pxa255lcd*)userData;
 	UInt32 val = 0;
 	UInt16 v16;
 	
@@ -206,7 +206,7 @@ static UInt32 pxa255PrvGetWord(Pxa255lcd* lcd, UInt32 addr){
 static void pxa255LcdPrvDma(Pxa255lcd* lcd, void* dest, UInt32 addr, UInt32 len){
 
 	UInt32 t;
-	UInt8* d = dest;
+	UInt8* d = (UInt8*)dest;
 
 	//we assume aligntment here both on part of dest and of addr
 

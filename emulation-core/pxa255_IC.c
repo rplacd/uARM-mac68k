@@ -20,7 +20,7 @@ static void pxa255icPrvHandleChanges(Pxa255ic* ic){
 
 static Boolean pxa255icPrvMemAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* buf){
 	
-	Pxa255ic* ic = userData;
+	Pxa255ic* ic = (Pxa255ic*)userData;
 	UInt32 val = 0;
 	
 	if(size != 4) {

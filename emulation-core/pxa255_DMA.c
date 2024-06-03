@@ -35,7 +35,7 @@ static UInt32 pxa255dmaPrvChannelRegRead(_UNUSED_ Pxa255dma* dma, _UNUSED_ UInt8
 
 static Boolean pxa255dmaPrvMemAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* buf){
 
-	Pxa255dma* dma = userData;
+	Pxa255dma* dma = (Pxa255dma*)userData;
 	UInt8 reg, set;
 	UInt32 val = 0;
 	

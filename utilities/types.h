@@ -17,10 +17,6 @@ typedef unsigned char Boolean;
 #define true	1
 #define false	0
 
-#ifndef NULL
-	#define NULL ((void*)0)
-#endif
-
 #define TYPE_CHECK ((sizeof(UInt32) == 4) && (sizeof(UInt16) == 2) && (sizeof(UInt8) == 1))
 
 #define errNone		0x00

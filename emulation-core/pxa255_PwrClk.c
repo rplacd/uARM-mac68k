@@ -1,10 +1,11 @@
 #include "../utilities/compiler_hacks.h"
 #include "pxa255_PwrClk.h"
+#include <stddef.h>
 
 
 static Boolean pxa255pwrClkPrvCoprocRegXferFunc(struct ArmCpu* cpu, void* userData, Boolean two, Boolean read, UInt8 op1, UInt8 Rx, UInt8 CRn, UInt8 CRm, UInt8 op2){
 	
-	Pxa255pwrClk* pc = userData;
+	Pxa255pwrClk* pc = (Pxa255pwrClk*)userData;
 	UInt32 val = 0;
 	
 	if(!read) val = cpuGetRegExternal(cpu, Rx);
@@ -48,7 +49,7 @@ success:
 
 static Boolean pxa255pwrClkPrvClockMgrMemAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* buf){
 
-	Pxa255pwrClk* pc = userData;
+	Pxa255pwrClk* pc = (Pxa255pwrClk*)userData;
 	UInt32 val = 0;
 	
 	if(size != 4) {
@@ -91,7 +92,7 @@ static Boolean pxa255pwrClkPrvClockMgrMemAccessF(void* userData, UInt32 pa, UInt
 
 static Boolean pxa255pwrClkPrvPowerMgrMemAccessF(void* userData, UInt32 pa, UInt8 size, Boolean write, void* buf){
 
-	Pxa255pwrClk* pc = userData;
+	Pxa255pwrClk* pc = (Pxa255pwrClk*)userData;
 	UInt32 val = 0;
 	
 	if(size != 4) {
