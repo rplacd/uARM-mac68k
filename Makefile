@@ -1,7 +1,7 @@
 # Compiler and linker definitions.
 
 APP	= uARM
-CC	= gcc
+CC	= g++
 LD	= gcc
 
 # Logic for optional SDL=yes flag.
@@ -52,7 +52,7 @@ ifeq ($(BUILD), opt64)
 endif
 
 LDFLAGS = $(LD_FLAGS) -Wall -Wextra
-CFLAGS = $(CC_FLAGS) -Wall -Wextra -std=gnu89 $(SDL_CC_OPTIONS)
+CFLAGS = $(CC_FLAGS) -Wall -Wextra -std=c++98 $(SDL_CC_OPTIONS)
 	# gcc's gnu89 "standard" is C99 plus the key syntactic features of C89;
 	# we are using it as the bare minimum featureset for compatibility
 	# with as many different compilers as possible.
