@@ -321,18 +321,20 @@ UInt32 mmuDR(ArmMmu* mmu, UInt32 addr){
 	return t;
 }
 
+static Boolean wasValid = false;
+static UInt8 wasDom = 0;
+static UInt8 wasAp = 0;
+static Boolean wasB = 0;
+static Boolean wasC = 0;
+static UInt32 startVa = 0;
+static UInt32 startPa = 0;
+static UInt32 expectPa = 0;
+
 static void mmuDumpUpdate(UInt32 va, UInt32 pa, UInt32 len, UInt8 dom, UInt8 ap, Boolean c, Boolean b, Boolean valid){
 	
 	UInt32 va_end;;
 	
-	static Boolean wasValid = false;
-	static UInt8 wasDom = 0;
-	static UInt8 wasAp = 0;
-	static Boolean wasB = 0;
-	static Boolean wasC = 0;
-	static UInt32 startVa = 0;
-	static UInt32 startPa = 0;
-	static UInt32 expectPa = 0;
+
 	
 	
 	va_end = (va || len) ? va - 1 : 0xFFFFFFFFUL;
