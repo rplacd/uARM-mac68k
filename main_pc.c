@@ -3,7 +3,6 @@
 #include "emulation-core/SoC.h"
 #include "emulation-core/callout_RAM.h"
 
-#include <sys/time.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -371,12 +370,17 @@ void emu_free(void* ptr){
 }
 
 UInt32 rtcCurTime(void){
-	
-	struct timeval tv;
-	
-	gettimeofday(&tv, NULL);
-	
-	return tv.tv_sec;	
+	/* the original implementation of uARM by D.G. used *nix 
+	   sys/time.h and returned a Unix timestamp: 
+			struct timeval tv;
+			gettimeofday(&tv, NULL);
+			return tv.tv_sec;	
+			
+		the following re-implmentation using C standard libraries
+		will (probably) do the exact same thing on *nixes with
+		sys/time.h, but its behavior on non-*nix platforms is unknown.
+	*/
+	return time(NULL);
 }
 
 void err_str(const char* str){
