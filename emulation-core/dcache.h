@@ -2,7 +2,7 @@
 #define _DCACHE_H_
 
 #include "../utilities/compiler_hacks.h"
-#include "types.h"
+#include "../utilities/types.h"
 #include "CPU.h"
 
 
