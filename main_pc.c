@@ -15,6 +15,16 @@
 #include <sys/select.h>
 #include <signal.h>
 #include <termios.h>
+=======
+
+// DECLARATIONS for frontend functions to be defined in a frontend_*.c file.
+// For standard POSIX, see frontend_POSIX.h.
+int readchar(int* ctlCSeen);
+void writechar(int chr);
+void setupTerminal();
+void teardownTerminal();
+//
+>>>>>>> Stashed changes
 
 unsigned char* readFile(const char* name, UInt32* lenP){
 
