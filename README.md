@@ -1,15 +1,13 @@
-Workbench for my attempts to get uARM running on the 68k Mac.
+Workbench for my attempts to get uARM running on the 68k Mac. So far, all I've managed to do was get uARM running on some platforms that have C99 support. One key implementation detail has changed: I moved the emulated SoC's working RAM (16MB) from process memory into a file. 
 
-So far, I have:
+# Current platforms (just 3 sadly)
 
-- Gotten uARM to compile on macOS on Apple Silicon.
+- Apple Silicon/macOS/clang
 
 <img width="668" alt="Screenshot 2024-05-27 at 4 13 09 AM" src="https://github.com/rplacd/uARM-mac68k/assets/147152/1e2508e5-ffe3-4df2-9cd2-228b0e80a409">
 
-Next, I will:
+– Apple Silicon/Windows 11/MSVC 2022;
 
-- Move emulated RAM in the PC/macOS target into a file: now check to see whether we've reduced RAM usage by doing so to <1MB. (We have 7MB so far!)
+- DOSBox 386/DOSBox/DJGPP
 
-<img width="671" alt="Screenshot 2024-05-27 at 5 53 51 AM" src="https://github.com/rplacd/uARM-mac68k/assets/147152/774c84e5-e1b9-4b10-9e35-d86a7487712d">
-
-- Create a rump mac68k target, that launches to some form of console IO, and make it work with some mac68k cross-compiler.
+![Image 6-11-24 at 4 01 AM](https://github.com/rplacd/uARM-mac68k/assets/147152/6ee5d399-dcf9-49e0-9f32-41c89036f998)
