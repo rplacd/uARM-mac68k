@@ -2,7 +2,14 @@
 
 #include <stdio.h>
 #include <time.h>
-#include <sys/select.h>
+#ifndef __DJGPP__
+	#include <sys/select.h>
+#else
+	#include <time.h> 
+		// Your eyes aren't deceiving you;
+		// select() is indeed defined in DJGPP's
+		// time.h. I told you this wasn't POSIX...
+#endif
 #include <termios.h>
 #include <unistd.h>
 
@@ -55,7 +62,7 @@ void setupTerminal() {
 	cfg = old;
 	if (ret) perror("cannot get term attrs");
 
-	#ifndef __APPLE__
+	#if !(defined(__APPLE__)) && !(defined(__DJGPP__))
 		cfg.c_iflag &= ~(INLCR | INPCK | ISTRIP | IUCLC | IXANY | IXOFF | IXON);
 		cfg.c_oflag &= ~(OPOST | OLCUC | ONLCR | OCRNL | ONOCR | ONLRET);
 		cfg.c_lflag &= ~(ECHO | ECHOE | ECHONL | ICANON | IEXTEN | XCASE);
