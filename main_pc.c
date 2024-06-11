@@ -210,7 +210,7 @@ int main(int argc, char** argv){
 	
 	if(argc <= 1 || argc >= 4){
 		PRINT_HELP_AND_QUIT:
-		fprintf(stderr,"usage: %s path_to_disk [with-telemetry] [gdbPort]]", argv[0]);
+		fprintf(stderr,"usage: %s path_to_disk [with-telemetry] [gdbPort]]\n", argv[0]);
 		return -1;	
 	}
 	
