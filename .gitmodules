@@ -1,3 +1,6 @@
 [submodule "Retro68"]
 	path = Retro68
 	url = https://github.com/autc04/Retro68.git
+[submodule "deps/FIFO"]
+	path = deps/FIFO
+	url = https://github.com/cristianCarrerasCastillo/FIFO.git
