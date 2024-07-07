@@ -1,13 +1,24 @@
+// frontend_djgpp.c:
+// See both http://djgpp.mirror.garr.it/v2faq/faq18_9.html
+// and https://www.delorie.com/djgpp/doc/ug/interrupts/inthandlers2.html
+// for a crash course on the theory of DJGPP (broadly DPMI) interrupts,
+// especially the first wrt. writing interrupts in C.
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
-#include <signal.h>
+#include <assert.h
 #include <sys/time.h>
 #include <unistd.h>
 #include <termios.h>
 
-#include "emulation-core/SoC.h"
-#include "deps/FIFO/FIFO.h"
+#include <pc.h>
+#include <dpmi.h>
+#include <go32.h>
+
+#include "../../emulation-core/SoC.h"
+#include "../../deps/FIFO/FIFO.h"
+
+#include <crt0.h>
+int _crt0_startup_flags = _CRT0_FLAG_LOCK_MEMORY;
 
 static struct termios cfg, old;
 
@@ -18,44 +29,19 @@ static fifo_t inputBuf;
 static fifo_t outputBuf;
 #define IO_BUF_SIZ 20
 
-// Timer interrupt state.
-static sigset_t timer_callback_s;
-#define FRONTEND_PERIOD_USEC 100 // e.g. 1 ms.
+// INT 8 interrupt state.
+_go32_dpmi_seginfo oldISR, newISR;
 
-// What signal type/interval timer can we use
-// to service IO? On DJGPP (i.e. single-process DOS),
-// we use a "real time" alarm, in contrast to...
-#ifdef __DJGPP__
-	#define OUR_TIMERSIG SIGALRM
-	#define OUR_WHICHTIMER ITIMER_REAL
-#else
-// ...on multiprocess POSIX platforms, where we use
-// "process time" alarm.
-	#define OUR_TIMERSIG SIGVTALRM
-	#define OUR_WHICHTIMER ITIMER_VIRTUAL
-#endif
+// Shamefully copied from Allego; DPMI lock functions
+// and variables.
+#define LOCK_VARIABLE(x)    _go32_dpmi_lock_data((void *)&x,(long)sizeof(x));
+#define LOCK_FUNCTION(x)    _go32_dpmi_lock_code(x,(long)sizeof(x));
+#define END_OF_FUNCTION(x) void x##_end() { }
 
-// Utility definitions that will let us expand OUR_SIGNALTYPE
-// into a string constant.
-#define STR(str) #str
-#define STRING(str) STR(str)
-
-
-// TODO: on DJGPP, 
-// why do we finish setupTerminal,
-// but never get to service_frontend?
-// Are we setting up the timer callback
-// properly?
-
-void service_frontend(int signo) {
+void service_frontend() {
+	// I will be called approximately every 18ms.
+	printf("d");
 	fflush(stdout);
-	
-	if(signo != OUR_TIMERSIG) {
-		perror("programmer error: do_frontend didn't"
-			"recieve " STRING(OUR_TIMERSIG) "; did you set this?");
-		exit(-1);
-	}
-	
 	// Do async, non-blocking (to the SoC) terminal IO.
 	
 	// ...print output and flush;
@@ -139,6 +125,9 @@ void service_frontend(int signo) {
 	done:
 	return;
 }
+// Needed to compute the size of the block of
+// memory to lock
+END_OF_FUNCTION(int_handler);
 
 int readchar(int* oobCtlCSeen) {
 	// note that control-c input is handled
@@ -215,23 +204,20 @@ void setupTerminal() {
 	// Setup output buffer;
 	inputBuf = fifo_create(IO_BUF_SIZ, sizeof(int));
 	outputBuf = fifo_create(IO_BUF_SIZ, sizeof(int));
-
-	// Setup timer interrupt.
-	signal(OUR_TIMERSIG, &service_frontend);
 	
-	struct timeval interval;
-	struct itimerval period;
-
-	interval.tv_sec = 0;
-	interval.tv_usec = FRONTEND_PERIOD_USEC;
-	
-	period.it_interval = interval;
-	period.it_value = interval;
-	
-	setitimer(OUR_WHICHTIMER, &period,NULL);0
+	// 
+	// Setup INT 8 interrupt; use go32 to
+	// chain-call the prior interrupt timer.
+	// Recall that interrupt 8 (the RTC interrupt)
+	// is raised approximately every 18ms.
+   _go32_dpmi_get_protected_mode_interrupt_vector(8, &oldISR);
+   newISR.pm_offset = (int)service_frontend;
+   NewISR.pm_selector = _go32_my_cs();
+	_go32_dpmi_chain_protected_mode_interrupt_vector(8, &newISR);
 }
 
 void teardownTerminal() {
+   _go32_dpmi_set_protected_mode_interrupt_vector(8, &oldISR);
 	tcsetattr(0, TCSANOW, &old);
 }
 
