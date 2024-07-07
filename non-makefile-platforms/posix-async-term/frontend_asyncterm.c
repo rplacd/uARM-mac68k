@@ -6,8 +6,8 @@
 #include <unistd.h>
 #include <termios.h>
 
-#include "emulation-core/SoC.h"
-#include "deps/FIFO/FIFO.h"
+#include "../../emulation-core/SoC.h"
+#include "../../deps/FIFO/FIFO.h"
 
 static struct termios cfg, old;
 
@@ -228,7 +228,7 @@ void setupTerminal() {
 	period.it_interval = interval;
 	period.it_value = interval;
 	
-	setitimer(OUR_WHICHTIMER, &period,NULL);0
+	setitimer(OUR_WHICHTIMER, &period,NULL);
 }
 
 void teardownTerminal() {
