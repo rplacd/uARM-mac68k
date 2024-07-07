@@ -56,6 +56,11 @@ void writechar(int chr) {
 static struct termios cfg, old;
 
 void setupTerminal() {
+	#ifdef PROFILING
+		printf("Profiling enabled; skipping tty changes\n");
+		return;
+	#endif
+	
 	int ret;
 
 	ret = tcgetattr(0, &old);
@@ -75,5 +80,10 @@ void setupTerminal() {
 }
 
 void teardownTerminal() {
+	#ifdef PROFILING
+		printf("Profiling enabled; skipping undoing tty changes\n");
+		return;
+	#endif
+	
 	tcsetattr(0, TCSANOW, &old);
 }

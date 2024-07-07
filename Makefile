@@ -28,14 +28,8 @@ ifeq ($(BUILD), avr)
 endif
 
 ifeq ($(BUILD), debug)
-	CC_FLAGS	= -O0 -g -ggdb -ggdb3 -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DLCD_SUPPORT
+	CC_FLAGS	= -O0 -g -ggdb -ggdb3 -D_FILE_OFFSET_BITS=64 -DPROFILING -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DLCD_SUPPORT
 	LD_FLAGS	= -O0 -g -ggdb -ggdb3 $(SDL_LD_OPTIONS)
-	EXTRA_OBJS	= main_pc.o frontend_posix.o
-endif
-
-ifeq ($(BUILD), profile)
-	CC_FLAGS	= -O3 -g -pg -fno-omit-frame-pointer -march=core2 -mpreferred-stack-boundary=4  -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
-	LD_FLAGS	= -O3 -g -pg $(SDL_LD_OPTIONS)
 	EXTRA_OBJS	= main_pc.o frontend_posix.o
 endif
 
@@ -78,7 +72,7 @@ AVR:   $(APP)
 # Non-standard (AVR or *nix) compilation make targets.
 
 help:
-	@echo "make clean | BUILD = (avr | debug | profile | opt | opt64) [SDL = no | yes]"
+	@echo "make clean | BUILD = (avr | debug | opt | opt64) [SDL = no | yes]"
 
 clean:
 	rm -f $(APP) *.o ./*/*.o
