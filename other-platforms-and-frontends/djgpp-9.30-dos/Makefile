@@ -1,10 +1,13 @@
+# Makefile for DJGPP – exactly like the Makefile
+# for standard POSIX ('Makefile'), but using
+# other-platforms-and-frontends/djgpp-9.30-dos/frontend_djgpp.c
+# as our frontend code, instead of frontend_posix.c
+
 # Compiler and linker definitions.
 
 APP	= uARM
 CC	= gcc
 LD	= gcc
-
-PLATFORM_DIR = ./non-makefile-platforms/posix-async-term
 
 # Logic for optional SDL=yes flag.
 
@@ -32,25 +35,25 @@ endif
 ifeq ($(BUILD), debug)
 	CC_FLAGS	= -O0 -g -ggdb -ggdb3 -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -DLCD_SUPPORT
 	LD_FLAGS	= -O0 -g -ggdb -ggdb3 $(SDL_LD_OPTIONS)
-	EXTRA_OBJS	= main_pc.o $(PLATFORM_DIR)/frontend_asyncterm.o
+	EXTRA_OBJS	= main_pc.o ./other-platforms-and-frontends/djgpp-9.30-dos/frontend_djgpp.o
 endif
 
 ifeq ($(BUILD), profile)
 	CC_FLAGS	= -O3 -g -pg -fno-omit-frame-pointer -march=core2 -mpreferred-stack-boundary=4  -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 	LD_FLAGS	= -O3 -g -pg $(SDL_LD_OPTIONS)
-	EXTRA_OBJS	= main_pc.o $(PLATFORM_DIR)/frontend_asyncterm.o
+	EXTRA_OBJS	= main_pc.o ./other-platforms-and-frontends/djgpp-9.30-dos/frontend_djgpp.o
 endif
 
 ifeq ($(BUILD), opt)
 	CC_FLAGS	= -O3 -fomit-frame-pointer -march=core2 -mpreferred-stack-boundary=4 -momit-leaf-frame-pointer -DNDEBUG -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -flto
 	LD_FLAGS	= $(CC_FLAGS) -flto -O3 $(SDL_LD_OPTIONS) 
-	EXTRA_OBJS	= main_pc.o $(PLATFORM_DIR)/frontend_asyncterm.o
+	EXTRA_OBJS	= main_pc.o ./other-platforms-and-frontends/djgpp-9.30-dos/frontend_djgpp.o
 endif
 
 ifeq ($(BUILD), opt64)
 	CC_FLAGS	= -m64 -O3 -fomit-frame-pointer -march=core2 -momit-leaf-frame-pointer -DNDEBUG -D_FILE_OFFSET_BITS=64 -D__USE_LARGEFILE64 -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE
 	LD_FLAGS	= -O3 $(SDL_LD_OPTIONS)
-	EXTRA_OBJS	= main_pc.o $(PLATFORM_DIR)/frontend_asyncterm.o
+	EXTRA_OBJS	= main_pc.o f./other-platforms-and-frontends/djgpp-9.30-dos/frontend_djgpp.o
 endif
 
 LDFLAGS = $(LD_FLAGS) -Wall -Wextra
