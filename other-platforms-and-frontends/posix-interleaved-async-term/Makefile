@@ -83,4 +83,4 @@ help:
 	@echo "make clean | BUILD = (avr | debug | profile | opt | opt64) [SDL = no | yes]"
 
 clean:
-	rm -f $(APP) *.o ./*/*.o
+	rm -f $(APP) *.o */*.o

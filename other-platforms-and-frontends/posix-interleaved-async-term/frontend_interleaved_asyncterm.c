@@ -41,12 +41,6 @@ static sigset_t timer_callback_s;
 #define STRING(str) STR(str)
 
 
-// TODO: on DJGPP, 
-// why do we finish setupTerminal,
-// but never get to service_frontend?
-// Are we setting up the timer callback
-// properly?
-
 void service_frontend() {
 	fflush(stdout);
 	

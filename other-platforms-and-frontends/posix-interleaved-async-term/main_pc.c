@@ -95,18 +95,7 @@ int readchar_wrapper() {
 	return readchar(&ctlCSeen);
 }
 
-int rootOps(void* userData, UInt32 sector, void* buf, UInt8 op){
-	// Perform memory load/store operations via reading/writing
-	// to a ramfile. Because disk IO here is the biggest hog
-	// on performance, and because every time we call
-	// this function we read/write bytes in multiples
-	// of the constant BLK_DEV_BLK_SZ, we can interleave calls
-	// to service_frontend() with individual byte read/writes.
-	// Hopefully, the time it takes to read/write an individual byte
-	// is small enough (as opposed to an entire block) that running
-	// service_frontend() between bytes is enough to maintain
-	// interactivity.
-	
+int rootOps(void* userData, UInt32 sector, void* buf, UInt8 op){	
 	// NB: rootOps is of type ArmMemAccessF.
 	
 	FILE* root = (FILE*)userData;
@@ -139,18 +128,12 @@ int rootOps(void* userData, UInt32 sector, void* buf, UInt8 op){
 		case BLK_OP_READ:
 			i = fseek(root, sector * BLK_DEV_BLK_SZ, SEEK_SET);
 			if(i) return false;
-			// Conceptually, we do:
-			// 		return fread(buf, 1, BLK_DEV_BLK_SZ, root) == BLK_DEV_BLK_SZ;
-			// but we instead turn this into 'BLK_DEV_BLK_SZ' iterations
-			// interleaved with service_frontend().
 			return fread(buf, 1, BLK_DEV_BLK_SZ, root) == BLK_DEV_BLK_SZ;
 		
 		case BLK_OP_WRITE:
 			
 			i = fseek(root, sector * BLK_DEV_BLK_SZ, SEEK_SET);
 			if(i) return false;
-			// Conceptually, we do:
-			// 		return fwrite(buf, 1, BLK_DEV_BLK_SZ, root) == BLK_DEV_BLK_SZ.
 			return fwrite(buf, 1, BLK_DEV_BLK_SZ, root) == BLK_DEV_BLK_SZ;
 	}
 	return 0;	
@@ -163,9 +146,19 @@ FILE *ramFile; // 16MB, per RAM_SIZE in SoC.c
 
 Boolean coRamAccess(_UNUSED_ void* ram, UInt32 addr, UInt8 size, Boolean write, void* bufP) {
 	// NB: coRamAccess is of type mem.h::ArmRamAccessF.
-	
-	// Below, we ran socInit(&soc, socRamModeCallout, coRamAccess, ...
-	// As a result, this fucntion (coRamAccess) is a callback that handles memory operations.
+	// NB: Below, we ran socInit(&soc, socRamModeCallout, coRamAccess, ...
+	// 		As a result, this fucntion (coRamAccess) is a callback
+	//		that handles memory operations.
+	// Perform memory load/store operations via reading/writing
+	// to a ramfile. Because disk IO here is the biggest hog
+	// on performance, and because every time we call
+	// this function we read/write bytes in multiples
+	// of the constant BLK_DEV_BLK_SZ, we can interleave calls
+	// to service_frontend() with individual byte read/writes.
+	// Hopefully, the time it takes to read/write an individual byte
+	// is small enough (as opposed to an entire block) that running
+	// service_frontend() between bytes is enough to maintain
+	// interactivity.
 
 	UInt8* b = (UInt8*)bufP;
 	
@@ -189,8 +182,14 @@ Boolean coRamAccess(_UNUSED_ void* ram, UInt32 addr, UInt8 size, Boolean write, 
 	}
 
 	if(write) {
-		// pseudocode: ramWrite(addr, b, size);
-		fwrite(b, 1, size, ramFile);
+		// pseudocode: ramWrite(addr, b, size), while
+		// interleaving service_frontend() between
+		// every byte.
+		size_t i, result = 0;
+		for(i = 0; i < size; ++i) {
+			service_frontend();
+			result += fwrite(b + i, 1, 1, ramFile);
+		}
 		
 		// the C standard doesn't specify how 'fwrite' will
 		// signal an error condition with its return value,
@@ -198,13 +197,22 @@ Boolean coRamAccess(_UNUSED_ void* ram, UInt32 addr, UInt8 size, Boolean write, 
 		if (feof(ramFile)) {
 			printf("Error writing to ramfile: end of file");
 			exit(-1);
-		} else if (ferror(ramFile)) {
+		} else if (result != size || ferror(ramFile)) {
 			perror("Error writing to ramfile");
 			exit(-1);
 		}
 	} else {
-		// pseudocode: ramRead(addr, b, size);
-		if(fread(b, 1, size, ramFile) != size) {
+		size_t i, result = 0;
+		
+		// pseudocode: ramRead(addr, b, size), while
+		// interleaving service_frontend() between
+		// every byte.
+		for(i = 0; i < size; ++i) {
+			service_frontend();
+			result += fread(b + i, 1, 1, ramFile);
+		}
+		
+		if(result != size) {
 			if (feof(ramFile)) {
 				printf("Error writing to ramfile: end of file");
 				exit(-1);
